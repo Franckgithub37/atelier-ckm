@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atelier CKM - Hammamet, 13 septembre 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --navy:#00233F; --deep:#0D497B; --blue:#0A80B1; --orange:#FF8000; --cyan:#74D2FA; --pale:#D1ECF8;
+  --green:#32B744; --white:#FFFFFF; --ink:rgba(255,255,255,.92); --muted:rgba(209,236,248,.72);
+  --line:rgba(116,210,250,.28); --field:rgba(255,255,255,.07); --field-focus:rgba(255,255,255,.12);
+  --bg:var(--navy); --panel:var(--deep);
+  --tf:"Kanit","Poppins",system-ui,sans-serif; --bf:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:18px; --rs:12px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:var(--navy); } }
+:root[data-theme="dark"]{ --bg:var(--navy); }
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--bf);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{min-height:100dvh}
+h1,h2,h3{font-family:var(--tf);font-weight:600;line-height:1.15;margin:0}
+h1{font-size:clamp(28px,5vw,40px)} h2{font-size:clamp(20px,3.4vw,26px)} h3{font-size:18px}
+p{margin:0}
+a{color:var(--cyan)}
+button{font:inherit;cursor:pointer;border:0;border-radius:999px;color:var(--white);background:transparent;padding:0}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.wrap{max-width:1180px;margin:0 auto;padding:20px clamp(14px,3vw,32px) 56px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0 22px}
+.brand{font-family:var(--tf);font-weight:600;font-size:15px;color:var(--cyan);letter-spacing:.2px}
+.brand small{display:block;font-family:var(--bf);font-weight:400;font-size:12.5px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13.5px;color:var(--muted)}
+.pill .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan)}
+.pill.ok .dot{background:var(--green)} .pill.off .dot{background:var(--orange)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 28px;font-weight:600;font-size:17px;border-radius:999px;transition:transform .08s ease,background .15s ease,box-shadow .15s ease}
+.btn:active{transform:scale(.985)}
+.btn.primary{background:var(--orange);color:var(--white);box-shadow:0 10px 26px -12px rgba(255,128,0,.75)}
+.btn.primary:hover{background:#ff8f1f}
+.btn.ghost{border:1.5px solid var(--cyan);color:var(--cyan)}
+.btn.ghost:hover{background:rgba(116,210,250,.1)}
+.btn.soft{background:rgba(255,255,255,.08);color:var(--ink)}
+.btn.soft:hover{background:rgba(255,255,255,.13)}
+.btn.block{width:100%}
+.btn.sm{min-height:44px;padding:0 18px;font-size:15px}
+.btn.danger{border:1.5px solid rgba(255,255,255,.3);color:var(--muted)}
+.panel{background:var(--panel);border-radius:var(--r);padding:clamp(18px,3vw,28px)}
+.panel + .panel{margin-top:16px}
+.stack>*+*{margin-top:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grow{flex:1 1 auto}
+.muted{color:var(--muted)} .cyan{color:var(--cyan)} .orange{color:var(--orange)}
+.small{font-size:14px}
+.hero-num{font-family:var(--tf);font-weight:700;font-size:clamp(64px,14vw,120px);line-height:.95;color:var(--white)}
+.hero-num.sm{font-size:clamp(40px,8vw,64px)}
+/* Accueil */
+.choices{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:26px}
+.choice{display:flex;flex-direction:column;gap:8px;text-align:left;background:var(--deep);border-radius:var(--r);padding:26px 24px;min-height:150px;border:1.5px solid transparent;transition:border-color .15s ease,transform .08s ease}
+.choice:hover{border-color:var(--cyan)} .choice:active{transform:scale(.99)}
+.choice h2{color:var(--white)} .choice p{color:var(--muted);font-size:15px}
+.choice .who{font-family:var(--tf);color:var(--orange);font-size:14px;font-weight:500}
+/* Grille tables */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px}
+.tbtn{aspect-ratio:1;border-radius:var(--rs);background:var(--field);border:1.5px solid transparent;font-family:var(--tf);font-size:30px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
+.tbtn small{font-family:var(--bf);font-size:11.5px;font-weight:500;color:var(--muted)}
+.tbtn:hover{border-color:var(--cyan)} .tbtn.sel{background:var(--orange);color:var(--white)} .tbtn.sel small{color:rgba(255,255,255,.85)}
+.tbtn .st{position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.25)}
+.tbtn .st.draft{background:var(--cyan)} .tbtn .st.validated{background:var(--green)}
+.tbtn .st.closed{background:var(--orange)}
+/* Champs */
+label.f{display:block}
+label.f .l{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+label.f .l b{font-family:var(--tf);font-weight:500;font-size:16.5px;color:var(--white)}
+label.f .l span{font-size:13px;color:var(--muted)}
+input[type=text],input[type=password],input[inputmode=numeric],textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--field);border:1.5px solid transparent;border-radius:var(--rs);padding:13px 15px;transition:background .15s ease,border-color .15s ease}
+textarea{min-height:92px;resize:vertical;line-height:1.45}
+input:focus,textarea:focus,select:focus{background:var(--field-focus);border-color:var(--cyan);outline:none}
+input[readonly],textarea[readonly]{opacity:.85}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2374D2FA' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px}
+select option{color:#0b1b2b;background:#fff}
+.code{font-family:var(--tf);font-size:34px;letter-spacing:.35em;text-align:center;padding:14px}
+.status{position:sticky;top:0;z-index:5;background:linear-gradient(var(--navy) 80%,transparent);padding:10px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.status .t{font-family:var(--tf);font-size:22px;font-weight:600}
+.status .t span{color:var(--cyan);font-weight:500;font-size:16px;display:block}
+.saved{font-size:13.5px;color:var(--muted)}
+.saved.on{color:var(--green)}
+.done{background:rgba(50,183,68,.14);border:1.5px solid rgba(50,183,68,.5);border-radius:var(--r);padding:20px 22px}
+.done h2{color:var(--white)}
+/* Vote */
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.sc{aspect-ratio:1;border-radius:50%;background:var(--field);border:2px solid rgba(116,210,250,.35);font-family:var(--tf);font-size:clamp(24px,7vw,34px);font-weight:600;color:var(--white);transition:background .12s ease,transform .08s ease,border-color .12s ease}
+.sc:hover{border-color:var(--cyan)} .sc.on{background:var(--orange);border-color:var(--orange);transform:scale(1.06)}
+.q{margin-top:24px} .q h3{color:var(--white);font-size:19px} .q p{color:var(--muted);font-size:14.5px;margin-top:4px}
+.ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:8px;padding:0 6px}
+.wait{text-align:center;padding:48px 12px}
+.wait .hero-num{color:var(--cyan)}
+.pulse{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--orange);animation:p 1.4s ease-in-out infinite}
+@keyframes p{0%,100%{transform:scale(.8);opacity:.6}50%{transform:scale(1.15);opacity:1}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+/* Régie */
+.tabs{display:flex;gap:6px;background:rgba(255,255,255,.06);border-radius:999px;padding:5px;width:max-content;max-width:100%;overflow:auto}
+.tabs button{padding:10px 20px;border-radius:999px;font-weight:500;color:var(--muted)}
+.tabs button.on{background:var(--orange);color:var(--white)}
+.tcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.tcard{background:rgba(255,255,255,.05);border-radius:var(--rs);padding:14px 16px;text-align:left;display:flex;flex-direction:column;gap:6px;border:1.5px solid transparent;color:var(--ink)}
+.tcard:hover{border-color:var(--cyan)} .tcard.live{border-color:var(--orange)}
+.tcard .n{font-family:var(--tf);font-size:26px;font-weight:600;line-height:1}
+.tcard .n small{font-size:13px;color:var(--cyan);font-weight:500;margin-left:8px}
+.tcard .s{font-size:13.5px;color:var(--muted)}
+.tcard .m{font-family:var(--tf);font-size:15px;color:var(--pale)}
+.regie{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+@media (max-width:820px){.regie{grid-template-columns:1fr}}
+.count{font-family:var(--tf);font-size:64px;font-weight:700;line-height:1}
+.count small{font-size:16px;font-family:var(--bf);font-weight:400;color:var(--muted);margin-left:8px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:15px}
+.kv b{font-family:var(--tf);font-weight:500;color:var(--cyan)}
+.result{background:rgba(255,255,255,.05);border-radius:var(--rs);padding:16px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;border:1.5px solid transparent}
+.result.win{border-color:var(--orange)}
+.result .big{font-family:var(--tf);font-size:34px;font-weight:700;line-height:1}
+.result .sc2{font-family:var(--tf);font-size:22px;text-align:right}
+.result .sc2 small{display:block;font-family:var(--bf);font-size:12.5px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--white);color:var(--navy);padding:12px 20px;border-radius:999px;font-weight:500;box-shadow:0 12px 30px -10px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:50;max-width:92vw}
+.toast.on{opacity:1}
+/* Projection */
+.proj{min-height:100dvh;padding:48px 64px;display:flex;flex-direction:column;gap:28px}
+.proj .head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.proj .head h1{font-size:44px} .proj .head .theme{font-size:24px;color:var(--cyan);font-family:var(--tf);font-weight:500}
+.proj .head .speaker{font-size:20px;color:var(--muted);margin-top:6px}
+.proj .title{font-family:var(--tf);font-size:clamp(34px,4.4vw,56px);font-weight:600;line-height:1.15;color:var(--white)}
+.proj .fields{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px;margin-top:8px}
+.proj .field b{display:block;font-family:var(--tf);font-weight:500;font-size:22px;color:var(--orange);margin-bottom:6px}
+.proj .field p{font-size:24px;line-height:1.35} .proj .field p.empty{color:rgba(209,236,248,.45)}
+.chrono{font-family:var(--tf);font-size:64px;font-weight:700;line-height:1;min-width:150px;text-align:right;color:var(--pale)}
+.chrono.warn{color:var(--orange)} .chrono.over{color:#FF4D4D}
+.proj .votebox{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;flex:1}
+.proj .votebox h1{font-size:72px;line-height:1.05} .proj .votebox .count{font-size:150px}
+#qr{background:#fff;padding:18px;border-radius:24px;display:inline-block}
+#qr img,#qr canvas{display:block}
+.proj .controls{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:10px;opacity:.25;transition:opacity .2s ease}
+.proj .controls:hover{opacity:1}
+.hidden{display:none !important}
+.gear{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);background:rgba(255,255,255,.06)}
+.gear:hover{color:var(--cyan);background:rgba(116,210,250,.12)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.sw:last-child{border-bottom:0}
+.sw b{font-family:var(--tf);font-weight:500;font-size:16px;color:var(--white);display:block}
+.sw span{font-size:13.5px;color:var(--muted)}
+.tog{width:56px;height:32px;border-radius:999px;background:rgba(255,255,255,.14);position:relative;flex:0 0 auto;transition:background .15s ease}
+.tog::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s ease}
+.tog.on{background:var(--orange)} .tog.on::after{transform:translateX(24px)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.cgrid label{background:rgba(255,255,255,.05);border-radius:var(--rs);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.cgrid label b{font-family:var(--tf);font-weight:500;color:var(--cyan)}
+.cgrid input,.cgrid select{padding:9px 11px}
+@media (max-width:520px){.qrbtn{display:none}.brand{font-size:13px}.brand small{display:none}.topbar{gap:8px;padding-bottom:16px}.btn.sm{min-height:40px;padding:0 14px;font-size:14px}.pill{padding:5px 11px;font-size:12.5px}}
+.reveal{display:grid;gap:16px;grid-template-columns:repeat(2,1fr);grid-template-rows:1fr 1fr;flex:1}
+.rv{background:var(--deep);border-radius:var(--r);padding:26px 28px;min-height:170px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.rv .th{font-family:var(--tf);color:var(--cyan);font-size:20px}
+.rv .ti{font-family:var(--tf);font-size:30px;font-weight:600;line-height:1.15}
+.rv .meta{font-size:18px;color:var(--muted)} .rv .sc3{position:absolute;right:26px;top:22px;font-family:var(--tf);font-size:28px;color:var(--orange)}
+.rv.masked .ti,.rv.masked .meta,.rv.masked .sc3{visibility:hidden}
+.rv.masked::after{content:"?";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--tf);font-size:96px;color:rgba(116,210,250,.25)}
+.rv.fav{outline:3px solid var(--orange)}
+.notice{border-left:3px solid var(--orange);padding:10px 16px;color:var(--muted);font-size:14.5px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===================== Configuration ===================== */
+const CFG0 = {
+  themes:{T1:"Le décrochage du traitement",T2:"La coordination entre spécialités et secteurs",T3:"La communication et l'adhésion du patient",T4:"Le suivi entre deux consultations"},
+  tableTheme:{1:"T1",2:"T2",3:"T3",4:"T4",5:"T1",6:"T2",7:"T3",8:"T4",9:"T1",10:"T2",11:"T3",12:"T4"},
+  codes:{1:"14",2:"27",3:"31",4:"48",5:"52",6:"69",7:"73",8:"86",9:"95",10:"18",11:"23",12:"37"},
+  adminCode:"130926", settingsCode:"0801",
+  pitchSec:120, voteSec:45, favSec:60,
+  lockEntry:false, lockTables:false, lockSettings:false,
+  publicUrl:"https://atelier-ckm.vercel.app",
+};
+let cfg = JSON.parse(JSON.stringify(CFG0));
+const THEMES = new Proxy({}, {get:(_,k)=>cfg.themes[k]?{n:k,t:cfg.themes[k]}:undefined, ownKeys:()=>Object.keys(cfg.themes), getOwnPropertyDescriptor:(_,k)=>({enumerable:true,configurable:true})});
+const themeOf = t => cfg.tableTheme[t] || ("T"+(((t-1)%4)+1));
+const FIELDS = [
+  {k:"f0", l:"Irritant travaillé", h:"En une phrase. C'est le titre du pitch"},
+  {k:"f1", l:"Qui est concerné", h:"Nom de fonction et lieu, précis"},
+  {k:"f2", l:"Moment du parcours patient", h:"Diagnostic, prescription, initiation, suivi, renouvellement, coordination"},
+  {k:"f3", l:"Informations nécessaires", h:"Optionnel si le praticien concerné dispose déjà de tout"},
+  {k:"f4", l:"Gain mesurable si traité", h:"Et comment on le mesure"},
+  {k:"f5", l:"Risque si non traité", h:"Pour le patient d'abord"},
+  {k:"f6", l:"Contraintes et points durs", h:"Organisation, données, réglementation, coût"},
+  {k:"f7", l:"Type d'outil numérique envisageable", h:"Une piste, pas une spécification"},
+];
+const POLL0 = {title:"L'IA en santé : entre mythe et réalité", question:"Quel intérêt pour votre pratique, de 1 à 5 ?", themes:["Veille et bibliographie augmentée","Communication patient","Automatisation médico-administrative"], open:false, revealed:false, noTables:true};
+const SESSION0 = {phase:"entry", currentTable:null, votingOpen:false, favoriteOpen:false, closed:[], revealed:[], favRevealed:false, poll:null};
+const pollStats=(poll,votes)=>{ const th=(poll&&poll.themes)||[]; return th.map((t,i)=>{ const v=votes.map(x=>x.scores&&x.scores[i]).filter(x=>typeof x==="number"); const n=v.length; return {i,t,n,m:n?v.reduce((a,b)=>a+b,0)/n:0}; }); };
+const emptyTable = id => ({id, theme:themeOf(id), speaker:"", status:"empty", validatedAt:null, canvas:{}, updatedAt:null});
+
+/* ===================== Couche de données ===================== */
+const deviceId = (()=>{ let d=localStorage.getItem("ckm.device"); if(!d){ d=Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem("ckm.device",d);} return d; })();
+const pref = { get:(k,d=null)=>{ try{ const v=localStorage.getItem("ckm."+k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set:(k,v)=>{ try{localStorage.setItem("ckm."+k,JSON.stringify(v));}catch(e){} } };
+
+/* Adaptateur claude.ai db (temps réel, partagé) */
+function DbStore(db){
+  return {
+    kind:"db",
+    onTable:(id,cb)=>db.doc("tables/t"+id).onSnapshot(s=>cb(s.exists?s.data():emptyTable(id))),
+    setTable:(id,data)=>db.doc("tables/t"+id).set(data),
+    onSession:cb=>db.doc("session/main").onSnapshot(s=>cb(s.exists?{...SESSION0,...s.data()}:SESSION0)),
+    setSession:data=>db.doc("session/main").set(data),
+    onVotes:(tid,cb)=>db.collection("votes").where("tableId","==",tid).onSnapshot(q=>cb(q.docs.map(d=>d.data()))),
+    setVote:(tid,data,vid)=>db.doc("votes/"+tid+"-"+(vid||deviceId)).set(data),
+    onMyVotes:(vid,cb)=>db.collection("votes").where("voterId","==",vid).onSnapshot(q=>cb(q.docs.map(d=>d.data()))),
+    onFavs:cb=>db.collection("favorites").onSnapshot(q=>cb(q.docs.map(d=>d.data()))),
+    setFav:(data,vid)=>db.doc("favorites/"+(vid||deviceId)).set(data),
+    onUsers:cb=>db.collection("users").onSnapshot(q=>cb(q.docs.map(d=>d.data()))),
+    getUser:async id=>{ const s=await db.doc("users/"+id).get(); return s.exists?s.data():null; },
+    setUser:data=>db.doc("users/"+data.id).set(data),
+    onPolls:cb=>db.collection("polls").onSnapshot(q=>cb(q.docs.map(d=>d.data()))),
+    onMyPoll:(v,cb)=>db.doc("polls/"+v).onSnapshot(s=>cb(s.exists?s.data():null)),
+    setPoll:(data,v)=>db.doc("polls/"+v).set(data),
+    clearPolls:async()=>{ const q=await db.collection("polls").limit(1000).get(); for(const d of q.docs) await db.doc("polls/"+d.id).delete(); },
+    onConfig:cb=>db.doc("config/main").onSnapshot(s=>cb(s.exists?s.data():null)),
+    setConfig:data=>db.doc("config/main").set(data),
+    reset:async()=>{ for(let i=1;i<=12;i++) await db.doc("tables/t"+i).delete(); await db.doc("session/main").set(SESSION0);
+      const v=await db.collection("votes").limit(1000).get(); for(const d of v.docs) await db.doc("votes/"+d.id).delete();
+      const f=await db.collection("favorites").limit(1000).get(); for(const d of f.docs) await db.doc("favorites/"+d.id).delete();
+      const u=await db.collection("users").limit(1000).get(); for(const d of u.docs) await db.doc("users/"+d.id).delete(); },
+  };
+}
+/* Adaptateur local (démonstration sur un seul navigateur, onglets synchronisés) */
+function LocalStore(){
+  const KEY="ckm.state"; const bc=("BroadcastChannel" in window)?new BroadcastChannel("ckm"):null;
+  const read=()=>pref.get("state",{tables:{},session:SESSION0,votes:{},favorites:{}});
+  const write=s=>{ pref.set("state",s); bc&&bc.postMessage("x"); notify(); };
+  const subs=new Set(); const notify=()=>subs.forEach(f=>f());
+  if(bc) bc.onmessage=()=>notify(); window.addEventListener("storage",e=>{ if(e.key==="ckm."+ "state") notify(); });
+  const sub=f=>{ subs.add(f); setTimeout(f,0); return ()=>subs.delete(f); };
+  return {
+    kind:"local",
+    onTable:(id,cb)=>sub(()=>cb(read().tables[id]||emptyTable(id))),
+    setTable:async(id,data)=>{ const s=read(); s.tables[id]=data; write(s); },
+    onSession:cb=>sub(()=>cb({...SESSION0,...read().session})),
+    setSession:async data=>{ const s=read(); s.session=data; write(s); },
+    onVotes:(tid,cb)=>sub(()=>cb(Object.values(read().votes).filter(v=>v.tableId===tid))),
+    setVote:async(tid,data,vid)=>{ const s=read(); s.votes[tid+"-"+(vid||deviceId)]=data; write(s); },
+    onMyVotes:(vid,cb)=>sub(()=>cb(Object.values(read().votes).filter(v=>v.voterId===vid))),
+    onFavs:cb=>sub(()=>cb(Object.values(read().favorites))),
+    setFav:async(data,vid)=>{ const s=read(); s.favorites[vid||deviceId]=data; write(s); },
+    onUsers:cb=>sub(()=>cb(Object.values(read().users||{}))),
+    getUser:async id=>(read().users||{})[id]||null,
+    setUser:async data=>{ const s=read(); s.users=s.users||{}; s.users[data.id]=data; write(s); },
+    onPolls:cb=>sub(()=>cb(Object.values(read().polls||{}))),
+    onMyPoll:(v,cb)=>sub(()=>cb((read().polls||{})[v]||null)),
+    setPoll:async(data,v)=>{ const s=read(); s.polls=s.polls||{}; s.polls[v]=data; write(s); },
+    clearPolls:async()=>{ const s=read(); s.polls={}; write(s); },
+    onConfig:cb=>sub(()=>cb(read().config||null)),
+    setConfig:async data=>{ const s=read(); s.config=data; write(s); },
+    reset:async()=>{ const c=read().config; write({tables:{},session:SESSION0,votes:{},favorites:{},users:{},config:c}); },
+  };
+}
+/* Adaptateur Supabase (hébergement Vercel, temps réel public) */
+function SupabaseStore(sb,opt={}){
+  const light=!!opt.light, vid=opt.vid||null;
+  const cache={tables:{},session:null,votes:{},favorites:{},users:{},polls:{},config:null}; const subs=new Set(); const notify=()=>subs.forEach(f=>f());
+  const apply=r=>{ if(!r) return; const [kind,id]=r.key.split(":"); if(kind==="table") cache.tables[id]=r.data; else if(kind==="session") cache.session=r.data; else if(kind==="vote") cache.votes[id]=r.data; else if(kind==="fav") cache.favorites[id]=r.data; else if(kind==="user") cache.users[id]=r.data; else if(kind==="poll") cache.polls[id]=r.data; else if(kind==="config") cache.config=r.data; };
+  const remove=key=>{ const [kind,id]=key.split(":"); if(kind==="table") delete cache.tables[id]; else if(kind==="session") cache.session=null; else if(kind==="vote") delete cache.votes[id]; else if(kind==="fav") delete cache.favorites[id]; else if(kind==="user") delete cache.users[id]; else if(kind==="poll") delete cache.polls[id]; else if(kind==="config") cache.config=null; };
+  const mine=()=>vid?["fav:"+vid,"poll:"+vid,"user:"+vid,...Array.from({length:12},(_,i)=>"vote:"+(i+1)+"-"+vid)]:[];
+  const load=async()=>{ let q=sb.from("ckm_docs").select("key,data"); if(light){ q=q.or(["key.eq.session:main","key.eq.config:main","key.like.table:%",...mine().map(k=>"key.eq."+k)].join(",")); } const {data,error}=await q; if(error) throw error; Object.assign(cache,{tables:{},session:null,votes:{},favorites:{},users:{},polls:{},config:null}); (data||[]).forEach(apply); notify(); };
+  const put=async(key,data)=>{ const {error}=await sb.from("ckm_docs").upsert({key,data,updated_at:new Date().toISOString()}); if(error) throw error; apply({key,data}); notify(); };
+  const sub=f=>{ subs.add(f); setTimeout(f,0); return ()=>subs.delete(f); };
+  const onEvt=p=>{ if(p.eventType==="DELETE"){ if(p.old&&p.old.key) remove(p.old.key); else load().catch(()=>{}); } else apply(p.new); notify(); };
+  const ch=sb.channel("ckm-"+deviceId);
+  if(light){
+    ch.on("postgres_changes",{event:"*",schema:"public",table:"ckm_docs",filter:"key=in.(session:main,config:main,"+Array.from({length:12},(_,i)=>"table:"+(i+1)).join(",")+")"},onEvt);
+    if(vid) ch.on("postgres_changes",{event:"*",schema:"public",table:"ckm_docs",filter:"key=in.("+mine().join(",")+")"},onEvt);
+  } else ch.on("postgres_changes",{event:"*",schema:"public",table:"ckm_docs"},onEvt);
+  ch.subscribe();
+  setInterval(()=>load().catch(()=>{}),light?90000:20000);
+  const ready=load();
+  return {
+    kind:"supabase", ready, light,
+    onTable:(id,cb)=>sub(()=>cb(cache.tables[id]||emptyTable(id))),
+    setTable:(id,data)=>put("table:"+id,data),
+    onSession:cb=>sub(()=>cb({...SESSION0,...(cache.session||{})})),
+    setSession:data=>put("session:main",data),
+    onVotes:(tid,cb)=>sub(()=>cb(Object.values(cache.votes).filter(v=>v.tableId===tid))),
+    setVote:(tid,data,vid)=>put("vote:"+tid+"-"+(vid||deviceId),data),
+    onMyVotes:(vid,cb)=>sub(()=>cb(Object.values(cache.votes).filter(v=>v.voterId===vid))),
+    onFavs:cb=>sub(()=>cb(Object.values(cache.favorites))),
+    setFav:(data,vid)=>put("fav:"+(vid||deviceId),data),
+    onUsers:cb=>sub(()=>cb(Object.values(cache.users))),
+    getUser:async id=>{ if(cache.users[id]) return cache.users[id]; const {data}=await sb.from("ckm_docs").select("data").eq("key","user:"+id).maybeSingle(); return data?data.data:null; },
+    setUser:data=>put("user:"+data.id,data),
+    onPolls:cb=>sub(()=>cb(Object.values(cache.polls))),
+    onMyPoll:(v,cb)=>sub(()=>cb(cache.polls[v]||null)),
+    setPoll:(data,v)=>put("poll:"+v,data),
+    clearPolls:async()=>{ const {error}=await sb.from("ckm_docs").delete().like("key","poll:%"); if(error) throw error; await load(); },
+    onConfig:cb=>sub(()=>cb(cache.config)),
+    setConfig:data=>put("config:main",data),
+    reset:async()=>{ const {error}=await sb.from("ckm_docs").delete().not("key","like","config:%"); if(error) throw error; await load(); },
+  };
+}
+let store=null, downloads=null;
+async function initStore(){
+  let db=null;
+  try{ if(window.claude&&typeof window.claude.use==="function"){ db=await window.claude.use("db"); downloads=await window.claude.use("downloads"); } }catch(e){ db=null; }
+  if(db){ store=DbStore(db); return; }
+  if(location.protocol.startsWith("http")){
+    try{ const r=await fetch("/api/config",{cache:"no-store"}); if(r.ok){ const c=await r.json(); if(c.url&&c.key&&window.supabase){ const sb=window.supabase.createClient(c.url,c.key); const light=location.hash.startsWith("#/vote"); const me=pref.get("voter"); const st=SupabaseStore(sb,{light,vid:light&&me?me.id:null}); await st.ready; store=st; return; } } }catch(e){}
+  }
+  store=LocalStore();
+}
+function loadConfig(){ return new Promise(res=>{ let done=false, last=""; const u=store.onConfig(c=>{ const j=JSON.stringify(c||null); const changed=j!==last; last=j; if(c) cfg={...CFG0,...c,themes:{...CFG0.themes,...(c.themes||{})},tableTheme:{...CFG0.tableTheme,...(c.tableTheme||{})},codes:{...CFG0.codes,...(c.codes||{})}}; if(!done){ done=true; res(); } else if(changed) route(); }); setTimeout(()=>{ if(!done){ done=true; res(); } },1500); }); }
+
+/* ===================== Utilitaires ===================== */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hhmm = ts=>ts?new Date(ts).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"";
+let toastT; function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("on"),2600); }
+const app=$("#app"); let unsubs=[]; function clean(){ unsubs.forEach(u=>{try{u()}catch(e){}}); unsubs=[]; }
+function route(){ const h=location.hash.replace("#/","")||"home"; if(store&&store.light&&!h.startsWith("vote")){ location.reload(); return; } clean(); document.documentElement.style.overflow=""; ({home,saisie,vote,regie,projection,parametres,qr}[h.split("?")[0]]||home)(); }
+window.addEventListener("hashchange",route);
+const go=h=>{ location.hash="#/"+h; };
+function topbar(sub, right=""){ const on=store.kind!=="local"; return `<div class="topbar"><div class="brand">Atelier CKM<small>${esc(sub)}</small></div><div class="row">${right}<span class="pill ${on?"ok":"off"}"><span class="dot"></span>${on?"Connecté":"Mode local"}</span><button class="btn sm soft qrbtn" onclick="go('qr')">QR code</button><button class="btn sm soft" onclick="go('home')">Accueil</button><button class="gear" onclick="go('parametres')" title="Paramètres" aria-label="Paramètres"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div></div>`; }
+function openProjection(){ if(store.kind==="db"){ go("projection"); toast("Pour garder la régie ouverte, ouvrez le lien de l'artefact dans une seconde fenêtre"); } else { const w=window.open(location.pathname+location.search+"#/projection","ckmproj"); if(!w) { go("projection"); toast("Fenêtre bloquée par le navigateur : projection ouverte ici"); } } }
+function baseUrl(){ const u=(cfg.publicUrl||"").trim(); if(u) return u.replace(/\/+$/,""); return location.origin+location.pathname.replace(/\/index\.html$/,"").replace(/\/$/,"")+location.search; }
+function voteUrl(){ return baseUrl()+"/#/vote"; }
+function drawQr(el,text,size){ if(!el||!window.QRCode) return; el.innerHTML=""; new QRCode(el,{text,width:size,height:size,colorDark:"#00233F",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M}); }
+async function copyText(t){ try{ await navigator.clipboard.writeText(t); toast("Lien copié"); }catch(e){ toast("Copie impossible : sélectionnez le lien à la main"); } }
+function stats(votes){ const n=votes.length; if(!n) return {n:0,i:0,f:0,s:0}; const i=votes.reduce((a,v)=>a+v.impact,0)/n, f=votes.reduce((a,v)=>a+v.feasibility,0)/n; return {n,i,f,s:i+f}; }
+const f1 = x=>x.toFixed(1).replace(".",",");
+
+/* ===================== Accueil ===================== */
+function home(){
+  app.innerHTML=`<div class="wrap">${topbar("Hammamet, samedi 13 septembre 2026")}
+  <h1>Bonjour. Vous êtes ?</h1>
+  <p class="muted" style="margin-top:8px">Un seul lien pour toute la salle. Choisissez votre rôle, il est mémorisé sur cet appareil.</p>
+  <div class="choices">
+    <button class="choice" onclick="go('saisie')"><span class="who">Facilitateur</span><h2>Saisir le canevas de ma table</h2><p>Sept champs, sauvegarde automatique, validation en bas de page.</p></button>
+    <button class="choice" onclick="go('vote')"><span class="who">Participant</span><h2>Voter</h2><p>Prénom, email, numéro de table. Puis deux notes de 1 à 5 après chaque pitch, l'écran s'active tout seul.</p></button>
+    <button class="choice" onclick="go('regie')"><span class="who">Elliacare</span><h2>Régie et projection</h2><p>Suivi des 12 tables, lancement des votes, résultats.</p></button>
+  </div>
+  ${store.kind==="local"?`<p class="notice" style="margin-top:26px">Mode local : cette page tourne sans base partagée. Les onglets de ce navigateur se synchronisent entre eux, ce qui suffit pour tester l'ergonomie.</p>`:""}
+  </div>`;
+}
+
+/* ===================== Saisie facilitateur ===================== */
+function saisie(){
+  const my=pref.get("myTable");
+  if(!my){ return saisieLogin(); }
+  let table=null, sess=null, timer=null, dirty=false;
+  app.innerHTML=`<div class="wrap" id="sv"></div>`;
+  const render=()=>{
+    if(!table) return;
+    const t=table, th=THEMES[t.theme]||THEMES[themeOf(my)], ro=t.status==="validated"||cfg.lockEntry;
+    $("#sv").innerHTML=`${topbar("Saisie du canevas",cfg.lockTables?"":`<button class="btn sm ghost" onclick="pref.set('myTable',null);route()">Changer de table</button>`)}
+    ${cfg.lockEntry?`<p class="notice">La saisie des canevas est verrouillée par la régie. Le canevas reste consultable.</p>`:""}
+    <div class="status"><div class="t">Table ${my}<span>${esc(th.n)} · ${esc(th.t)}</span></div><div class="saved" id="saved">${t.updatedAt?"Enregistré à "+hhmm(t.updatedAt):"Rien d'enregistré pour l'instant"}</div></div>
+    ${ro&&t.status==="validated"?`<div class="done"><h2>Canevas validé à ${hhmm(t.validatedAt)}</h2><p class="muted" style="margin-top:6px">Il sera projeté pendant votre pitch. Vous pouvez encore corriger : toute modification après 15h25 est visible immédiatement à l'écran.</p>${cfg.lockEntry?"":`<div class="row" style="margin-top:16px"><button class="btn ghost" id="corr">Corriger</button></div>`}</div>`:""}
+    <div class="panel stack" style="margin-top:16px">
+      <div class="row">
+        <label class="f grow"><div class="l"><b>Thématique</b></div><select id="theme" ${ro?"disabled":""}>${Object.values(THEMES).map(x=>`<option value="${x.n}" ${x.n===t.theme?"selected":""}>${x.n} · ${esc(x.t)}</option>`).join("")}</select></label>
+        <label class="f grow"><div class="l"><b>Orateur du pitch</b><span>Vous, ou un médecin volontaire</span></div><input type="text" id="speaker" value="${esc(t.speaker)}" placeholder="Dr ..." ${ro?"readonly":""}></label>
+      </div>
+    </div>
+    <div class="panel stack" style="margin-top:16px">
+      ${FIELDS.map((f,i)=>`<label class="f"><div class="l"><b>${i===0?"":i+". "}${esc(f.l)}</b><span>${esc(f.h)}</span></div><textarea data-k="${f.k}" ${ro?"readonly":""} ${i===0?'style="min-height:70px;font-family:var(--tf);font-size:20px"':""}>${esc(t.canvas[f.k]||"")}</textarea></label>`).join("")}
+    </div>
+    ${ro?"":`<div style="margin-top:22px"><button class="btn primary block" id="valid">Valider le canevas</button><p class="small muted" style="text-align:center;margin-top:10px">Un champ vide est accepté : vous le direz au pitch.</p></div>`}`;
+    const save=()=>{ clearTimeout(timer); timer=setTimeout(async()=>{ const c={}; document.querySelectorAll("#sv textarea").forEach(x=>c[x.dataset.k]=x.value.trim()); const data={...t,theme:$("#theme").value,speaker:$("#speaker").value.trim(),canvas:c,status:t.status==="validated"?"validated":"draft",updatedAt:Date.now()}; table=data; try{ await store.setTable(my,data); const s=$("#saved"); if(s){ s.textContent="Enregistré à "+hhmm(data.updatedAt); s.classList.add("on"); } }catch(e){ toast("Enregistrement impossible, vérifiez le réseau"); } },700); };
+    document.querySelectorAll("#sv textarea, #speaker, #theme").forEach(x=>{ x.addEventListener("input",()=>{ const s=$("#saved"); if(s){ s.textContent="Modifications en cours"; s.classList.remove("on"); } save(); }); });
+    const v=$("#valid"); if(v) v.onclick=async()=>{ clearTimeout(timer); const c={}; document.querySelectorAll("#sv textarea").forEach(x=>c[x.dataset.k]=x.value.trim()); const data={...t,theme:$("#theme").value,speaker:$("#speaker").value.trim(),canvas:c,status:"validated",validatedAt:Date.now(),updatedAt:Date.now()}; try{ await store.setTable(my,data); toast("Canevas de la table "+my+" validé"); window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ toast("Validation impossible, vérifiez le réseau"); } };
+    const c=$("#corr"); if(c) c.onclick=async()=>{ await store.setTable(my,{...t,status:"draft",updatedAt:Date.now()}); };
+  };
+  let first=true;
+  unsubs.push(store.onTable(my,d=>{ const focused=document.activeElement&&document.activeElement.matches("textarea,input,select"); const prev=table?table.status:null; table=d; if(first||!focused||d.status!==prev){ render(); first=false; } }));
+}
+function saisieLogin(){
+  let sel=null;
+  app.innerHTML=`<div class="wrap">${topbar("Saisie du canevas")}
+  <h1>Quelle est votre table ?</h1>
+  <div class="panel stack" style="margin-top:20px">
+    <div class="tgrid" id="tg">${Array.from({length:12},(_,i)=>i+1).map(n=>`<button class="tbtn" data-n="${n}">${n}<small>${themeOf(n)}</small></button>`).join("")}</div>
+    <label class="f"><div class="l"><b>Code de la table</b><span>Deux chiffres, sur votre trame imprimée</span></div><input class="code" inputmode="numeric" maxlength="2" id="code" placeholder="··"></label>
+    <button class="btn primary block" id="enter" disabled>Ouvrir le canevas</button>
+  </div></div>`;
+  const chk=()=>{ $("#enter").disabled=!(sel&&$("#code").value.length===2); };
+  document.querySelectorAll("#tg .tbtn").forEach(b=>b.onclick=()=>{ sel=+b.dataset.n; document.querySelectorAll("#tg .tbtn").forEach(x=>x.classList.toggle("sel",+x.dataset.n===sel)); chk(); $("#code").focus(); });
+  $("#code").addEventListener("input",chk);
+  $("#enter").onclick=()=>{ if($("#code").value===String(cfg.codes[sel])){ pref.set("myTable",sel); route(); } else { toast("Code incorrect pour la table "+sel); $("#code").value=""; chk(); } };
+}
+
+/* ===================== Vote participant ===================== */
+const userIdOf=email=>"u_"+email.trim().toLowerCase().replace(/[^a-z0-9]/g,"_");
+function vote(){
+  const me=pref.get("voter"); if(!me) return voteLogin(); const my=me.table||0;
+  let sess=null, tables={}, impact=0, feas=0, favSel=null, myVotes={}, myFav=false, myPoll=null, pollScores={};
+  app.innerHTML=`<div class="wrap" id="vv"></div>`;
+  const voted=()=>myVotes;
+  const render=()=>{
+    if(!sess) return;
+    const head=topbar("Vote",`<span class="pill">${esc(me.firstName)}${my?" · table "+my:""}</span>${cfg.lockTables?"":`<button class="btn sm soft" onclick="pref.set('voter',null);if(store.kind==='supabase'){location.reload()}else{route()}">Changer</button>`}`);
+    let body="";
+    const poll=sess.poll;
+    if(sess.phase==="poll"&&poll){
+      if(poll.open&&!myPoll){
+        const th=poll.themes||[]; const all=th.every((_,i)=>pollScores[i]);
+        body=`<h1 style="font-size:clamp(22px,5vw,30px)">${esc(poll.title)}</h1><p class="muted" style="margin-top:6px">${esc(poll.question)}</p>
+        ${th.map((t,i)=>`<div class="q"><h3>${esc(t)}</h3><div class="scale" data-poll="${i}">${[1,2,3,4,5].map(n=>`<button class="sc ${pollScores[i]===n?"on":""}" data-n="${n}">${n}</button>`).join("")}</div><div class="ends"><span>Mythe</span><span>Réalité utile</span></div></div>`).join("")}
+        <div style="margin-top:28px"><button class="btn primary block" id="sendPoll" ${all?"":"disabled"}>Envoyer mes réponses</button></div>`;
+      } else if(myPoll) body=`<div class="wait"><h1>Merci${me.firstName?", "+esc(me.firstName):""}</h1><p class="muted" style="margin-top:8px">${poll.open?"Vos réponses sont enregistrées. Les résultats arrivent à l'écran.":"Les résultats sont à l'écran."}</p></div>`;
+      else body=`<div class="wait"><span class="pulse"></span><h2 style="margin-top:18px">${esc(poll.title)}</h2><p class="muted" style="margin-top:8px">Le sondage n'est pas encore ouvert. Votre écran s'activera tout seul.</p></div>`;
+    } else if(sess.favoriteOpen&&!sess.favRevealed){
+      const quals=qualified(sess,tables); const already=myFav;
+      body = already?`<div class="wait"><h1>Merci</h1><p class="muted" style="margin-top:8px">Votre coup de coeur est enregistré.</p></div>`:
+      `<h1>Votre coup de coeur</h1><p class="muted" style="margin-top:6px">Un seul choix parmi les quatre irritants qualifiés.</p>
+      <div class="stack" style="margin-top:18px">${quals.map(q=>`<button class="choice ${favSel===q.id?"sel":""}" style="${favSel===q.id?"border-color:var(--orange)":""} ${q.id===my?"opacity:.4;pointer-events:none":""}" data-id="${q.id}"><span class="who">${esc(THEMES[q.theme].t)} · Table ${q.id}${q.id===my?" · votre table":""}</span><h2 style="font-size:20px">${esc(q.canvas.f0||"Sans titre")}</h2></button>`).join("")}</div>
+      <div style="margin-top:22px"><button class="btn primary block" id="sendFav" ${favSel?"":"disabled"}>Envoyer mon coup de coeur</button></div>`;
+    } else if(sess.votingOpen&&sess.currentTable){
+      const ct=sess.currentTable, t=tables[ct]||emptyTable(ct), th=THEMES[t.theme]||THEMES[themeOf(ct)];
+      if(ct===my) body=`<div class="wait"><div class="hero-num sm">Table ${ct}</div><h2 style="margin-top:14px">C'est votre table</h2><p class="muted" style="margin-top:8px">Ce tour est sans vous. Écoutez, le prochain vote vous reviendra.</p></div>`;
+      else if(voted()[ct]) body=`<div class="wait"><div class="hero-num sm">Table ${ct}</div><h2 style="margin-top:14px">Vote enregistré</h2><p class="muted" style="margin-top:8px">Merci. En attente du pitch suivant.</p></div>`;
+      else body=`<div class="row" style="align-items:baseline"><div class="hero-num sm">Table ${ct}</div><div class="grow"><p class="cyan" style="font-family:var(--tf)">${esc(th.t)}</p><p class="muted small">${esc(t.speaker||"")}</p></div></div>
+        <h2 style="margin-top:14px">${esc(t.canvas.f0||"Notez ce pitch")}</h2>
+        <div class="q"><h3>Impact pour le patient</h3><p>Si cet irritant était traité, votre patient irait-il mieux entre deux consultations ?</p><div class="scale" id="s1">${[1,2,3,4,5].map(n=>`<button class="sc ${impact===n?"on":""}" data-n="${n}">${n}</button>`).join("")}</div><div class="ends"><span>Aucun</span><span>Décisif</span></div></div>
+        <div class="q"><h3>Faisable en Tunisie d'ici deux ans</h3><p>Avec les données, les personnes et les moyens réels.</p><div class="scale" id="s2">${[1,2,3,4,5].map(n=>`<button class="sc ${feas===n?"on":""}" data-n="${n}">${n}</button>`).join("")}</div><div class="ends"><span>Illusoire</span><span>Réalisable dès maintenant</span></div></div>
+        <div style="margin-top:28px"><button class="btn primary block" id="send" ${impact&&feas?"":"disabled"}>Envoyer mon vote</button></div>`;
+    } else if(sess.phase==="results"||sess.phase==="done"||sess.favRevealed){
+      body=`<div class="wait"><h1>Merci pour vos votes</h1><p class="muted" style="margin-top:8px">Les résultats sont à l'écran.</p></div>`;
+    } else {
+      body=`<div class="wait"><span class="pulse"></span><h2 style="margin-top:18px">En attente du prochain pitch</h2><p class="muted" style="margin-top:8px">${sess.currentTable?"Table "+sess.currentTable+" est en train de présenter. Votre écran s'activera quand le vote sera ouvert.":"Votre écran s'activera tout seul quand le vote sera ouvert."}</p></div>`;
+    }
+    $("#vv").innerHTML=head+body;
+    document.querySelectorAll("[data-poll] .sc").forEach(b=>b.onclick=()=>{ pollScores[+b.closest("[data-poll]").dataset.poll]=+b.dataset.n; render(); });
+    const sp=$("#sendPoll"); if(sp) sp.onclick=async()=>{ sp.disabled=true; try{ await store.setPoll({voterId:me.id,firstName:me.firstName,email:me.email,voterTable:my,scores:{...pollScores},createdAt:Date.now()},me.id); myPoll={scores:{...pollScores}}; toast("Réponses enregistrées"); render(); }catch(e){ sp.disabled=false; toast("Envoi impossible, réessayez"); } };
+    document.querySelectorAll("#s1 .sc").forEach(b=>b.onclick=()=>{ impact=+b.dataset.n; render(); });
+    document.querySelectorAll("#s2 .sc").forEach(b=>b.onclick=()=>{ feas=+b.dataset.n; render(); });
+    const s=$("#send"); if(s) s.onclick=async()=>{ const ct=sess.currentTable; s.disabled=true; try{ await store.setVote(ct,{tableId:ct,voterId:me.id,firstName:me.firstName,email:me.email,deviceId,voterTable:my,impact,feasibility:feas,createdAt:Date.now()},me.id); myVotes[ct]=true; impact=0;feas=0; toast("Vote enregistré"); render(); }catch(e){ s.disabled=false; toast("Envoi impossible, réessayez"); } };
+    document.querySelectorAll("#vv .choice[data-id]").forEach(b=>b.onclick=()=>{ favSel=+b.dataset.id; render(); });
+    const sf=$("#sendFav"); if(sf) sf.onclick=async()=>{ sf.disabled=true; try{ await store.setFav({voterId:me.id,firstName:me.firstName,email:me.email,deviceId,voterTable:my,tableId:favSel,createdAt:Date.now()},me.id); myFav=true; render(); }catch(e){ sf.disabled=false; toast("Envoi impossible, réessayez"); } };
+  };
+  unsubs.push(store.onSession(s=>{ if(sess&&sess.currentTable!==s.currentTable){ impact=0;feas=0; } sess=s; render(); }));
+  for(let i=1;i<=12;i++) unsubs.push(store.onTable(i,d=>{ tables[i]=d; render(); }));
+  unsubs.push(store.onMyVotes(me.id,v=>{ const m={}; v.forEach(x=>m[x.tableId]=true); myVotes=m; render(); }));
+  unsubs.push(store.onFavs(f=>{ myFav=f.some(x=>x.voterId===me.id); render(); }));
+  unsubs.push(store.onMyPoll(me.id,pv=>{ myPoll=pv; render(); }));
+}
+function voteLogin(){
+  let sel=null, known=null, noTables=false;
+  app.innerHTML=`<div class="wrap">${topbar("Vote")}
+  <h1>Qui êtes-vous ?</h1><p class="muted" style="margin-top:8px">Votre prénom et votre email servent uniquement à enregistrer vos votes et à les retrouver si vous changez d'appareil.</p>
+  <div class="panel stack" style="margin-top:20px">
+    <div class="row"><label class="f grow"><div class="l"><b>Prénom</b></div><input type="text" id="fn" autocomplete="given-name" placeholder="Votre prénom"></label>
+    <label class="f grow"><div class="l"><b>Email</b></div><input type="text" id="em" inputmode="email" autocomplete="email" placeholder="prenom@exemple.tn"></label></div>
+    <p class="small" id="hello" style="min-height:1.4em"></p>
+    <div id="tableBlock"><div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap"><b style="font-family:var(--tf);font-weight:500;color:var(--white)">À quelle table êtes-vous assis ?</b><span class="small muted">Vous ne noterez pas votre propre table</span></div>
+    <div class="tgrid" id="tg">${Array.from({length:12},(_,i)=>i+1).map(n=>`<button class="tbtn" data-n="${n}">${n}</button>`).join("")}</div></div>
+    <button class="btn primary block" id="enter" disabled>Commencer</button>
+  </div></div>`;
+  const okMail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+  const chk=()=>{ const e=$("#enter"); if(e) e.disabled=!((sel||noTables)&&$("#fn").value.trim().length>=2&&okMail($("#em").value)); };
+  unsubs.push(store.onSession(s=>{ noTables=!!(s.phase==="poll"&&s.poll&&s.poll.noTables); const tb=$("#tableBlock"); if(tb) tb.classList.toggle("hidden",noTables); chk(); }));
+  let lookT=null;
+  const lookup=()=>{ clearTimeout(lookT); lookT=setTimeout(async()=>{ const em=$("#em").value; known=null; if(!okMail(em)) { $("#hello").textContent=""; return; } try{ const u=await store.getUser(userIdOf(em)); if(u){ known=u; if(!$("#fn").value.trim()) $("#fn").value=u.firstName||""; if(!sel&&u.table){ sel=u.table; paint(); } $("#hello").innerHTML=`<span class="cyan">Bienvenue à nouveau${u.firstName?", "+esc(u.firstName):""} : votre session de la table ${u.table} est retrouvée.</span>`; } else $("#hello").textContent=""; chk(); }catch(e){} },500); };
+  const paint=()=>document.querySelectorAll("#tg .tbtn").forEach(x=>x.classList.toggle("sel",+x.dataset.n===sel));
+  document.querySelectorAll("#tg .tbtn").forEach(b=>b.onclick=()=>{ if(cfg.lockTables&&known&&known.table&&known.table!==+b.dataset.n){ toast("Le choix de table est verrouillé : vous êtes enregistré à la table "+known.table); return; } sel=+b.dataset.n; paint(); chk(); });
+  $("#fn").addEventListener("input",chk); $("#em").addEventListener("input",()=>{ chk(); lookup(); });
+  $("#enter").onclick=async()=>{ const firstName=$("#fn").value.trim(), email=$("#em").value.trim().toLowerCase(), id=userIdOf(email); const me={id,firstName,email,table:sel||0,deviceId,updatedAt:Date.now()}; try{ await store.setUser(me); }catch(e){ toast("Enregistrement impossible, vérifiez le réseau"); return; } pref.set("voter",me); if(store.kind==="supabase"){ location.reload(); } else route(); };
+}
+
+/* ===================== Calculs ===================== */
+function qualified(sess,tables,votesBy={}){
+  const out=[];
+  for(const th of Object.keys(THEMES)){
+    const cands=[];
+    for(let i=1;i<=12;i++){ const t=tables[i]||emptyTable(i); if((t.theme||themeOf(i))===th) cands.push({...t,id:i,st:stats(votesBy[i]||[])}); }
+    cands.sort((a,b)=>(b.st.s-a.st.s)||(b.st.f-a.st.f)||(b.st.n-a.st.n)||(a.id-b.id));
+    if(cands[0]) out.push(cands[0]);
+  }
+  return out;
+}
+
+/* ===================== Régie ===================== */
+function regie(){
+  if(pref.get("admin")!==cfg.adminCode) return regieLogin();
+  let tab=pref.get("regieTab","tables"), sess=SESSION0, tables={}, votesBy={}, favs=[], users=[], polls=[], selected=null, pollDraft=null;
+  app.innerHTML=`<div class="wrap" id="rg"></div>`;
+  const render=()=>{
+    const live=sess.currentTable;
+    const closedSet=new Set(sess.closed||[]);
+    const allClosed=closedSet.size>=12;
+    let body="";
+    if(tab==="tables"){
+      body=`<div class="tcards">${Array.from({length:12},(_,i)=>i+1).map(i=>{ const t=tables[i]||emptyTable(i), s=stats(votesBy[i]||[]); const filled=FIELDS.filter(f=>(t.canvas||{})[f.k]).length; return `<button class="tcard ${live===i?"live":""}" data-open="${i}"><div class="n">${i}<small>${t.theme||themeOf(i)}</small></div><div class="s">${t.status==="validated"?"Validé à "+hhmm(t.validatedAt):t.status==="draft"?"Brouillon · "+filled+" champs sur 8":"Rien de saisi"}</div><div class="s">${esc(t.speaker||"Orateur non renseigné")}</div><div class="m">${s.n?`${s.n} votes · I ${f1(s.i)} · F ${f1(s.f)}`:closedSet.has(i)?"Vote fermé, aucun vote":"Pas encore voté"}</div></button>`;}).join("")}</div>
+      ${selected?canvasView(selected):""}`;
+    } else if(tab==="vote"){
+      const t=live?tables[live]||emptyTable(live):null; const s=live?stats(votesBy[live]||[]):null;
+      body=`<div class="regie">
+        <div class="panel stack"><h2>Quelle table présente ?</h2>
+          <div class="tgrid">${Array.from({length:12},(_,i)=>i+1).map(i=>`<button class="tbtn ${live===i?"sel":""}" data-pick="${i}">${i}<small>${(tables[i]||emptyTable(i)).theme||themeOf(i)}</small><span class="st ${closedSet.has(i)?"closed":(tables[i]||{}).status||""}"></span></button>`).join("")}</div>
+          <p class="small muted">Point vert : canevas validé. Orange : vote déjà fermé. Choisir une table ferme automatiquement le vote précédent.</p></div>
+        <div class="panel stack">${live?`<div class="row" style="align-items:baseline"><div class="hero-num sm">Table ${live}</div><div class="grow"><p class="cyan" style="font-family:var(--tf)">${esc((THEMES[t.theme]||{}).t||"")}</p><p class="muted small">${esc(t.speaker||"Orateur non renseigné")}</p></div></div>
+          <p style="font-family:var(--tf);font-size:19px">${esc(t.canvas.f0||"Irritant non renseigné")}</p>
+          <div class="count">${s.n}<small>vote${s.n>1?"s":""} reçu${s.n>1?"s":""}</small></div>
+          ${s.n?`<div class="kv"><b>Impact</b><span>${f1(s.i)} sur 5</span><b>Faisabilité</b><span>${f1(s.f)} sur 5</span><b>Score</b><span>${f1(s.s)} sur 10</span></div>`:""}
+          ${sess.votingOpen?`<button class="btn primary block" id="close">Fermer le vote de la table ${live}</button>`:`<button class="btn primary block" id="open" ${closedSet.has(live)?"disabled":""}>${closedSet.has(live)?"Vote déjà fermé":"Lancer le vote de la table "+live}</button>`}
+          ${closedSet.has(live)&&!sess.votingOpen?`<button class="btn ghost sm" id="reopen">Rouvrir exceptionnellement</button>`:""}`:`<h2>Aucune table sélectionnée</h2><p class="muted">Choisissez la table qui passe, puis lancez le vote quand le pitch est terminé.</p>`}
+        </div></div>
+        <div class="panel" style="margin-top:16px"><div class="row"><div class="grow"><h3>Coup de coeur</h3><p class="muted small">${allClosed?"Les 12 votes sont fermés. Le coup de coeur porte sur les 4 qualifiés.":closedSet.size+" table"+(closedSet.size>1?"s":"")+" fermée"+(closedSet.size>1?"s":"")+" sur 12. Disponible quand les 12 votes seront fermés."}</p></div>
+          ${sess.favoriteOpen?`<button class="btn ghost" id="favClose">Fermer le coup de coeur (${favs.length})</button>`:`<button class="btn ghost" id="favOpen" ${allClosed&&!sess.favRevealed?"":"disabled"}>Lancer le coup de coeur</button>`}</div></div>`;
+    } else if(tab==="results"){
+      const quals=qualified(sess,tables,votesBy); const favCount={}; favs.forEach(f=>favCount[f.tableId]=(favCount[f.tableId]||0)+1);
+      const favWin=quals.map(q=>({id:q.id,n:favCount[q.id]||0})).sort((a,b)=>b.n-a.n)[0];
+      body=`<div class="panel stack"><h2>Les quatre irritants qualifiés</h2><p class="muted small">Un par thématique : meilleure somme des deux moyennes, la faisabilité tranche les égalités. Révélez-les un par un à l'écran.</p>
+        ${quals.map(q=>`<div class="result ${(sess.revealed||[]).includes(q.id)?"win":""}"><div class="big">${q.id}</div><div><p class="cyan small" style="font-family:var(--tf)">${esc(THEMES[q.theme].t)}</p><p style="font-family:var(--tf);font-size:18px">${esc(q.canvas.f0||"Sans titre")}</p><p class="muted small">${esc(q.speaker||"")} · ${q.st.n} votes${favCount[q.id]?" · "+favCount[q.id]+" coups de coeur":""}</p></div><div class="sc2">${f1(q.st.s)}<small>I ${f1(q.st.i)} · F ${f1(q.st.f)}</small><button class="btn sm ${(sess.revealed||[]).includes(q.id)?"soft":"primary"}" data-reveal="${q.id}" style="margin-top:8px">${(sess.revealed||[]).includes(q.id)?"Révélé":"Révéler"}</button></div></div>`).join("")}
+        <div class="row" style="margin-top:6px"><button class="btn ghost" id="favReveal" ${favs.length&&!sess.favRevealed?"":"disabled"}>${sess.favRevealed?"Coup de coeur révélé : table "+favWin.id:"Révéler le coup de coeur"}</button><button class="btn soft" id="toResults">Afficher l'écran résultats</button></div></div>
+        <div class="panel stack"><h2>Classement complet, pour le rapport</h2><p class="muted small">Jamais affiché en salle.</p>
+        ${Array.from({length:12},(_,i)=>i+1).map(i=>({i,t:tables[i]||emptyTable(i),s:stats(votesBy[i]||[])})).sort((a,b)=>b.s.s-a.s.s).map(x=>`<div class="kv"><b>Table ${x.i}</b><span>${x.t.theme||themeOf(x.i)} · ${esc(x.t.canvas.f0||"Sans titre")} · ${x.s.n} votes · I ${f1(x.s.i)} · F ${f1(x.s.f)} · score ${f1(x.s.s)}</span></div>`).join("")}</div>`;
+    } else if(tab==="poll"){
+      const poll=sess.poll||POLL0; if(!pollDraft) pollDraft=JSON.parse(JSON.stringify(poll));
+      const st=pollStats(poll,polls); const best=st.length?st.slice().sort((a,b)=>b.m-a.m||b.n-a.n)[0]:null; const live=sess.phase==="poll";
+      body=`<div class="regie">
+        <div class="panel stack"><h2>Le sondage</h2>
+          <label class="f"><div class="l"><b>Titre</b></div><input type="text" id="pTitle" value="${esc(pollDraft.title)}"></label>
+          <label class="f"><div class="l"><b>Question</b></div><input type="text" id="pQ" value="${esc(pollDraft.question)}"></label>
+          <label class="f"><div class="l"><b>Thématiques</b><span>Une par ligne, 2 à 6</span></div><textarea id="pThemes" style="min-height:110px">${esc((pollDraft.themes||[]).join("\n"))}</textarea></label>
+          <div class="sw"><div><b>Sans tables</b><span>Les participants s'identifient sans numéro de table (soirée du 12).</span></div><button class="tog ${pollDraft.noTables?"on":""}" id="pNoTables"></button></div>
+          <div class="row"><button class="btn ghost" id="pSave">Enregistrer</button>${poll.open?`<button class="btn primary" id="pClose">Fermer le sondage</button>`:`<button class="btn primary" id="pOpen">${live?"Rouvrir le sondage":"Lancer le sondage"}</button>`}</div>
+          <div class="row"><button class="btn soft sm" id="pReveal" ${live&&!poll.open?"":"disabled"}>${poll.revealed?"Résultats révélés à l'écran":"Révéler les résultats à l'écran"}</button><button class="btn danger sm" id="pClear">Effacer les réponses</button></div>
+          <p class="small muted">Lancer le sondage met la projection et tous les téléphones en mode sondage. Pour revenir aux pitchs, choisissez une table dans l'onglet Vote.</p>
+        </div>
+        <div class="panel stack"><h2>${esc(poll.title)}</h2><div class="count">${polls.length}<small>réponse${polls.length>1?"s":""}</small></div>
+          ${st.map(x=>`<div><div class="row" style="justify-content:space-between"><b style="font-family:var(--tf);font-weight:500;color:${best&&best.i===x.i&&x.n?"var(--orange)":"var(--white)"}">${esc(x.t)}</b><span class="cyan" style="font-family:var(--tf)">${x.n?f1(x.m)+" / 5":"-"}</span></div><div style="height:10px;border-radius:999px;background:rgba(255,255,255,.08);margin-top:6px;overflow:hidden"><div style="height:100%;width:${(x.m/5*100).toFixed(0)}%;background:${best&&best.i===x.i&&x.n?"var(--orange)":"var(--cyan)"}"></div></div></div>`).join("")}
+        </div></div>`;
+    } else if(tab==="share"){
+      const isArtifact=store.kind==="db"; const url=baseUrl();
+      body=`<div class="regie">
+        <div class="panel stack"><h2>Le lien de la salle</h2>
+          <p class="muted small">Un seul lien pour les facilitateurs et les participants. Le QR code ouvre directement l'écran de vote.</p>
+          <input type="text" id="shareUrl" readonly value="${esc(url)}" style="font-family:var(--tf);font-size:18px">
+          <div class="row"><button class="btn primary" id="copyUrl">Copier le lien</button><button class="btn ghost" onclick="go('qr')">Page à imprimer</button></div>
+          ${isArtifact?`<p class="notice">Ce lien est celui de l'artefact Claude : il ne s'ouvre que pour les membres de votre organisation Claude. L'adresse publique viendra du déploiement Vercel ; vous pouvez la fixer dans Paramètres pour que ce QR code pointe dessus dès maintenant.</p>`:""}
+        </div>
+        <div class="panel stack" style="align-items:center;text-align:center"><div id="qrShare" style="background:#fff;padding:14px;border-radius:20px;display:inline-block"></div><p class="muted small">Scanner pour voter</p></div>
+      </div>`;
+    } else if(tab==="outils"){
+      const byTable={}; users.forEach(u=>byTable[u.table]=(byTable[u.table]||0)+1);
+      body=`<div class="panel stack"><h2>Participants identifiés</h2><div class="count">${users.length}<small>inscrit${users.length>1?"s":""}</small></div><p class="muted small">${Array.from({length:12},(_,i)=>i+1).map(i=>"T"+i+" : "+(byTable[i]||0)).join(" · ")}</p><div class="row"><button class="btn ghost sm" id="csvUsers">Exporter la liste (CSV)</button></div></div>
+      <div class="panel stack"><h2>Export et remise à zéro</h2>
+        <div class="row"><button class="btn ghost" id="csv">Exporter en CSV</button><button class="btn ghost" id="json">Exporter en JSON</button></div>
+        <p class="muted small">${downloads?"Le fichier vous est proposé à l'enregistrement.":"Sans capacité de téléchargement ici, l'export s'affiche ci-dessous pour copier-coller."}</p>
+        <textarea id="exportOut" readonly style="min-height:160px;font-size:13px;font-family:monospace" placeholder="L'export apparaîtra ici"></textarea>
+        <div class="row" style="margin-top:12px"><button class="btn danger" id="reset">Remettre tout à zéro</button><p class="muted small">Efface les 12 canevas, tous les votes et l'état de la séance. Pour les tests des 11 et 12 septembre seulement.</p></div>
+        <div class="row"><button class="btn soft sm" id="logout">Quitter la régie</button></div></div>`;
+    }
+    $("#rg").innerHTML=`${topbar("Régie",`<button class="btn sm ghost" onclick="openProjection()">Ouvrir la projection</button>`)}
+      <div class="row" style="justify-content:space-between"><div class="tabs">${[["tables","Les 12 tables"],["vote","Vote"],["results","Résultats"],["poll","Sondage IA"],["share","QR code"],["outils","Outils"]].map(x=>`<button class="${tab===x[0]?"on":""}" data-tab="${x[0]}">${x[1]}</button>`).join("")}</div>
+      <span class="pill ${sess.votingOpen?"ok":""}"><span class="dot"></span>${sess.votingOpen?"Vote ouvert · table "+sess.currentTable:sess.favoriteOpen?"Coup de coeur ouvert":live?"Table "+live+" à l'écran":"En attente"}</span></div>
+      <div style="margin-top:18px">${body}</div>`;
+    document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{ tab=b.dataset.tab; pref.set("regieTab",tab); render(); });
+    if(tab==="share"){ drawQr($("#qrShare"),voteUrl(),240); const cu=$("#copyUrl"); if(cu) cu.onclick=()=>copyText(baseUrl()); }
+    if(tab==="poll"){
+      const readDraft=()=>({...pollDraft,title:$("#pTitle").value.trim()||POLL0.title,question:$("#pQ").value.trim()||POLL0.question,themes:$("#pThemes").value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6)});
+      ["#pTitle","#pQ","#pThemes"].forEach(q=>$(q).addEventListener("input",()=>{ pollDraft=readDraft(); }));
+      $("#pNoTables").onclick=()=>{ pollDraft.noTables=!pollDraft.noTables; render(); };
+      const cur=sess.poll||POLL0;
+      const savePoll=async(extra={})=>{ const d=readDraft(); if(d.themes.length<2) return toast("Il faut au moins deux thématiques"); const poll={...cur,...d,...extra}; await store.setSession({...sess,poll,...(extra.open||extra.revealed!==undefined?{phase:"poll",votingOpen:false,favoriteOpen:false}:{})}); pollDraft=null; };
+      $("#pSave").onclick=()=>savePoll().then(()=>toast("Sondage enregistré"));
+      const po=$("#pOpen"); if(po) po.onclick=()=>savePoll({open:true,revealed:false}).then(()=>toast("Sondage ouvert"));
+      const pc=$("#pClose"); if(pc) pc.onclick=()=>savePoll({open:false}).then(()=>toast("Sondage fermé"));
+      $("#pReveal").onclick=()=>savePoll({open:false,revealed:true}).then(()=>toast("Résultats à l'écran"));
+      $("#pClear").onclick=async()=>{ if(!confirm("Effacer toutes les réponses au sondage ?")) return; await store.clearPolls(); await store.setSession({...sess,poll:{...cur,revealed:false}}); toast("Réponses effacées"); };
+    }
+    document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{ selected=selected===+b.dataset.open?null:+b.dataset.open; render(); });
+    document.querySelectorAll("[data-screen]").forEach(b=>b.onclick=async()=>{ await store.setSession({...sess,phase:"pitch",currentTable:+b.dataset.screen,votingOpen:false}); toast("Table "+b.dataset.screen+" à l'écran"); });
+    document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=async()=>{ const i=+b.dataset.pick; await store.setSession({...sess,phase:"pitch",currentTable:i,votingOpen:false}); });
+    const o=$("#open"); if(o) o.onclick=async()=>{ await store.setSession({...sess,phase:"voting",votingOpen:true}); toast("Vote ouvert pour la table "+live); };
+    const c=$("#close"); if(c) c.onclick=async()=>{ const closed=Array.from(new Set([...(sess.closed||[]),live])); await store.setSession({...sess,phase:"pitch",votingOpen:false,closed}); toast("Vote fermé"); };
+    const r=$("#reopen"); if(r) r.onclick=async()=>{ await store.setSession({...sess,phase:"voting",votingOpen:true}); };
+    const fo=$("#favOpen"); if(fo) fo.onclick=async()=>{ await store.setSession({...sess,phase:"favorite",favoriteOpen:true,votingOpen:false}); };
+    const fc=$("#favClose"); if(fc) fc.onclick=async()=>{ await store.setSession({...sess,phase:"results",favoriteOpen:false}); };
+    document.querySelectorAll("[data-reveal]").forEach(b=>b.onclick=async()=>{ const id=+b.dataset.reveal; const revealed=Array.from(new Set([...(sess.revealed||[]),id])); await store.setSession({...sess,phase:"results",revealed}); });
+    const fr=$("#favReveal"); if(fr) fr.onclick=async()=>{ await store.setSession({...sess,phase:"done",favRevealed:true,favoriteOpen:false}); };
+    const tr=$("#toResults"); if(tr) tr.onclick=async()=>{ await store.setSession({...sess,phase:"results",votingOpen:false,favoriteOpen:false}); };
+    const ex=async(kind)=>{ const rows=[["table","theme","orateur","statut","valide_a",...FIELDS.map(f=>f.k+"_"+f.l),"votes","impact","faisabilite","score","coups_de_coeur"]]; const favCount={}; favs.forEach(f=>favCount[f.tableId]=(favCount[f.tableId]||0)+1);
+      const all=[]; for(let i=1;i<=12;i++){ const t=tables[i]||emptyTable(i), s=stats(votesBy[i]||[]); all.push({table:i,theme:t.theme,speaker:t.speaker,status:t.status,validatedAt:t.validatedAt,canvas:t.canvas,votes:votesBy[i]||[],stats:s,favorites:favCount[i]||0}); rows.push([i,t.theme,t.speaker,t.status,hhmm(t.validatedAt),...FIELDS.map(f=>(t.canvas||{})[f.k]||""),s.n,f1(s.i),f1(s.f),f1(s.s),favCount[i]||0]); }
+      const csv=rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\n"); const json=JSON.stringify({exportedAt:new Date().toISOString(),session:sess,tables:all,favorites:favs,participants:users,poll:sess.poll,pollVotes:polls},null,2);
+      const data=kind==="csv"?"\ufeff"+csv:json, name="atelier-ckm-13-septembre."+kind; $("#exportOut").value=kind==="csv"?csv:json;
+      if(downloads){ try{ await downloads.save({filename:name,data}); toast("Export proposé"); }catch(e){ toast("Enregistrement refusé ou indisponible : le contenu est affiché ci-dessous"); } } };
+    const cs=$("#csv"); if(cs) cs.onclick=()=>ex("csv"); const js=$("#json"); if(js) js.onclick=()=>ex("json");
+    const cu=$("#csvUsers"); if(cu) cu.onclick=async()=>{ const rows=[["prenom","email","table","inscrit_a"]]; users.slice().sort((a,b)=>(a.table-b.table)||String(a.firstName).localeCompare(String(b.firstName))).forEach(u=>rows.push([u.firstName,u.email,u.table,hhmm(u.updatedAt)])); const csv=rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\n"); $("#exportOut").value=csv; if(downloads){ try{ await downloads.save({filename:"participants-13-septembre.csv",data:"\ufeff"+csv}); }catch(e){} } };
+    const rs=$("#reset"); if(rs) rs.onclick=async()=>{ if(!confirm("Effacer les 12 canevas, tous les votes et l'état de la séance ?")) return; if(!confirm("Dernière confirmation : cette action est irréversible.")) return; await store.reset(); toast("Tout est remis à zéro"); };
+    const lo=$("#logout"); if(lo) lo.onclick=()=>{ pref.set("admin",null); go("home"); };
+  };
+  const canvasView=i=>{ const t=tables[i]||emptyTable(i); return `<div class="panel" style="margin-top:16px"><div class="row" style="justify-content:space-between"><h2>Table ${i} · ${esc((THEMES[t.theme]||{}).t||"")}</h2><div class="row"><button class="btn sm primary" data-screen="${i}">Mettre à l'écran</button></div></div><p class="muted small">${esc(t.speaker||"Orateur non renseigné")}</p><div class="stack" style="margin-top:14px">${FIELDS.map(f=>`<div><b class="cyan" style="font-family:var(--tf);font-weight:500">${esc(f.l)}</b><p>${t.canvas[f.k]?esc(t.canvas[f.k]):'<span class="muted">Non renseigné</span>'}</p></div>`).join("")}</div></div>`; };
+  unsubs.push(store.onSession(s=>{ sess=s; render(); }));
+  for(let i=1;i<=12;i++){ unsubs.push(store.onTable(i,d=>{ tables[i]=d; render(); })); unsubs.push(store.onVotes(i,v=>{ votesBy[i]=v; render(); })); }
+  unsubs.push(store.onFavs(f=>{ favs=f; render(); }));
+  unsubs.push(store.onUsers(u=>{ users=u; render(); }));
+  unsubs.push(store.onPolls(pv=>{ polls=pv; render(); }));
+}
+function regieLogin(){
+  app.innerHTML=`<div class="wrap">${topbar("Régie")}<h1>Accès régie</h1>
+  <div class="panel stack" style="margin-top:20px;max-width:460px"><label class="f"><div class="l"><b>Code régie</b><span>Six chiffres</span></div><input class="code" type="password" inputmode="numeric" maxlength="6" id="acode"></label><button class="btn primary block" id="ok">Entrer</button></div></div>`;
+  $("#ok").onclick=()=>{ if($("#acode").value===cfg.adminCode){ pref.set("admin",cfg.adminCode); route(); } else toast("Code incorrect"); };
+  $("#acode").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#ok").click(); });
+}
+
+/* ===================== Paramètres ===================== */
+function parametres(){
+  if(pref.get("settings")!==cfg.settingsCode) return parametresLogin();
+  let draft=JSON.parse(JSON.stringify(cfg));
+  app.innerHTML=`<div class="wrap" id="pr"></div>`;
+  const render=()=>{
+    const locked=draft.lockSettings;
+    $("#pr").innerHTML=`${topbar("Paramètres",`<button class="btn sm soft" id="quit">Quitter</button>`)}
+    <div class="row" style="justify-content:space-between"><h1>Paramètres</h1><span class="pill ${locked?"off":""}"><span class="dot"></span>${locked?"Paramètres verrouillés":"Modifiables"}</span></div>
+    <p class="muted" style="margin-top:8px">Tout ce qui se change ici s'applique immédiatement sur tous les appareils connectés.</p>
+    <div class="panel stack" style="margin-top:20px"><h2>Verrous</h2>
+      <div class="sw"><div><b>Verrouiller la saisie des canevas</b><span>Les facilitateurs ne peuvent plus modifier ni corriger. Utile à 15h25.</span></div><button class="tog ${draft.lockEntry?"on":""}" data-t="lockEntry" ${locked?"disabled":""}></button></div>
+      <div class="sw"><div><b>Verrouiller le choix de table</b><span>Participants et facilitateurs ne peuvent plus changer de table une fois entrés.</span></div><button class="tog ${draft.lockTables?"on":""}" data-t="lockTables" ${locked?"disabled":""}></button></div>
+      <div class="sw"><div><b>Verrouiller ces paramètres</b><span>Empêche toute modification jusqu'au déverrouillage avec le code paramètres.</span></div><button class="tog ${draft.lockSettings?"on":""}" data-t="lockSettings"></button></div>
+    </div>
+    <div class="panel stack"><h2>Codes d'accès</h2>
+      <div class="row"><label class="f grow"><div class="l"><b>Code régie</b><span>Six chiffres</span></div><input type="text" inputmode="numeric" maxlength="6" data-k="adminCode" value="${esc(draft.adminCode)}" ${locked?"readonly":""}></label>
+      <label class="f grow"><div class="l"><b>Code paramètres</b><span>Quatre chiffres</span></div><input type="text" inputmode="numeric" maxlength="4" data-k="settingsCode" value="${esc(draft.settingsCode)}" ${locked?"readonly":""}></label></div>
+      <h3 style="margin-top:8px">Codes des tables et thématiques</h3>
+      <div class="cgrid">${Array.from({length:12},(_,i)=>i+1).map(i=>`<label><b>Table ${i}</b><input type="text" inputmode="numeric" maxlength="2" data-code="${i}" value="${esc(draft.codes[i])}" ${locked?"readonly":""} placeholder="Code"><select data-theme="${i}" ${locked?"disabled":""}>${Object.keys(draft.themes).map(k=>`<option value="${k}" ${draft.tableTheme[i]===k?"selected":""}>${k}</option>`).join("")}</select></label>`).join("")}</div>
+    </div>
+    <div class="panel stack"><h2>Thématiques</h2>
+      ${Object.keys(draft.themes).map(k=>`<label class="f"><div class="l"><b>${k}</b></div><input type="text" data-th="${k}" value="${esc(draft.themes[k])}" ${locked?"readonly":""}></label>`).join("")}
+    </div>
+    <div class="panel stack"><h2>Adresse publique</h2>
+      <label class="f"><div class="l"><b>Adresse de l'application</b><span>Optionnel. Sert au QR code et au lien affiché. Vide : l'adresse de la page en cours</span></div><input type="text" data-k="publicUrl" value="${esc(draft.publicUrl||"")}" placeholder="https://atelier-ckm.vercel.app" ${locked?"readonly":""}></label>
+    </div>
+    <div class="panel stack"><h2>Chronomètres</h2>
+      <div class="row"><label class="f grow"><div class="l"><b>Pitch</b><span>secondes</span></div><input type="text" inputmode="numeric" data-k="pitchSec" value="${draft.pitchSec}" ${locked?"readonly":""}></label>
+      <label class="f grow"><div class="l"><b>Vote</b><span>secondes</span></div><input type="text" inputmode="numeric" data-k="voteSec" value="${draft.voteSec}" ${locked?"readonly":""}></label>
+      <label class="f grow"><div class="l"><b>Coup de coeur</b><span>secondes</span></div><input type="text" inputmode="numeric" data-k="favSec" value="${draft.favSec}" ${locked?"readonly":""}></label></div>
+    </div>
+    <div style="margin-top:22px" class="row"><button class="btn primary grow" id="save">Enregistrer les paramètres</button><button class="btn ghost" id="restore">Valeurs par défaut</button></div>`;
+    document.querySelectorAll(".tog").forEach(b=>b.onclick=()=>{ draft[b.dataset.t]=!draft[b.dataset.t]; render(); });
+    document.querySelectorAll("[data-k]").forEach(x=>x.oninput=()=>{ draft[x.dataset.k]=/Sec$/.test(x.dataset.k)?Math.max(5,parseInt(x.value)||0):x.value.trim(); });
+    document.querySelectorAll("[data-code]").forEach(x=>x.oninput=()=>{ draft.codes[x.dataset.code]=x.value.trim(); });
+    document.querySelectorAll("[data-theme]").forEach(x=>x.onchange=()=>{ draft.tableTheme[x.dataset.theme]=x.value; });
+    document.querySelectorAll("[data-th]").forEach(x=>x.oninput=()=>{ draft.themes[x.dataset.th]=x.value; });
+    $("#save").onclick=async()=>{ if(!/^\d{6}$/.test(draft.adminCode)) return toast("Le code régie doit avoir six chiffres"); if(!/^\d{4}$/.test(draft.settingsCode)) return toast("Le code paramètres doit avoir quatre chiffres"); for(let i=1;i<=12;i++){ if(!/^\d{2}$/.test(String(draft.codes[i]))) return toast("Table "+i+" : le code doit avoir deux chiffres"); } try{ await store.setConfig(draft); pref.set("settings",draft.settingsCode); if(pref.get("admin")) pref.set("admin",draft.adminCode); toast("Paramètres enregistrés"); }catch(e){ toast("Enregistrement impossible"); } };
+    $("#restore").onclick=()=>{ if(!confirm("Revenir aux valeurs par défaut ? Rien n'est enregistré tant que vous n'appuyez pas sur Enregistrer.")) return; draft=JSON.parse(JSON.stringify(CFG0)); render(); };
+    $("#quit").onclick=()=>{ pref.set("settings",null); go("home"); };
+  };
+  render();
+}
+function parametresLogin(){
+  app.innerHTML=`<div class="wrap">${topbar("Paramètres")}<h1>Paramètres</h1>
+  <div class="panel stack" style="margin-top:20px;max-width:460px"><label class="f"><div class="l"><b>Code paramètres</b><span>Quatre chiffres</span></div><input class="code" type="password" inputmode="numeric" maxlength="4" id="scode"></label><button class="btn primary block" id="ok">Entrer</button></div></div>`;
+  $("#ok").onclick=()=>{ if($("#scode").value===cfg.settingsCode){ pref.set("settings",cfg.settingsCode); route(); } else toast("Code incorrect"); };
+  $("#scode").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#ok").click(); });
+}
+
+/* ===================== Page QR code ===================== */
+function qr(){
+  const url=baseUrl(); const isArtifact=store.kind==="db";
+  app.innerHTML=`<style>
+  .qrpage{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+  .qrpage .kick{color:var(--orange);font-family:var(--tf);font-weight:600;font-size:clamp(15px,1.8vw,22px)}
+  .qrpage h1{font-size:clamp(34px,6vw,72px);margin-top:6px}
+  .qrpage .box{margin-top:26px;background:#fff;padding:clamp(14px,2vw,24px);border-radius:28px;display:inline-block}
+  .qrpage .u{font-family:var(--tf);font-size:clamp(20px,3.2vw,40px);color:var(--cyan);word-break:break-all;margin-top:24px}
+  .qrpage p.h{font-size:clamp(16px,1.9vw,24px);color:var(--muted);max-width:760px;margin-top:14px}
+  .qrpage .acts{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  @media print{ html,body{background:#fff !important} .qrpage{color:#00233F;min-height:auto;padding:0} .qrpage .kick{color:#FF8000} .qrpage h1{color:#00233F} .qrpage .u{color:#0A80B1} .qrpage p.h{color:#3c5a73} .qrpage .box{border:2px solid #D1ECF8} .qrpage .acts,.topbar,.toast,.notice{display:none !important} }
+  </style>
+  <div class="wrap" style="padding-bottom:0">${topbar("QR code")}</div>
+  <div class="qrpage">
+    <div class="kick">Atelier d'idéation - Hammamet, 13 septembre 2026</div>
+    <h1>Scannez pour voter</h1>
+    <div class="box" id="qrBig"></div>
+    <div class="u">${esc(url)}</div>
+    <p class="h">Choisissez votre table une seule fois. Votre écran s'active tout seul après chaque pitch. Deux notes de 1 à 5 : impact pour le patient, faisabilité d'ici deux ans.</p>
+    ${isArtifact?`<p class="notice" style="margin-top:18px;max-width:760px">Ce QR code pointe sur l'artefact Claude, réservé à votre organisation. Saisissez l'adresse publique Vercel dans Paramètres pour qu'il pointe sur la salle.</p>`:""}
+    <div class="acts"><button class="btn primary" onclick="window.print()">Imprimer</button><button class="btn ghost" id="copyQr">Copier le lien</button><button class="btn soft" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">Plein écran</button></div>
+  </div>`;
+  const size=Math.min(420,Math.floor(Math.min(window.innerWidth,window.innerHeight)*0.42));
+  drawQr($("#qrBig"),voteUrl(),size);
+  $("#copyQr").onclick=()=>copyText(baseUrl());
+}
+
+/* ===================== Projection ===================== */
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+function projection(){
+  let sess=SESSION0, tables={}, votesBy={}, favs=[], polls=[], chrono=null, left=120, chronoT=null;
+  document.documentElement.style.overflow="hidden";
+  app.innerHTML=`<div class="proj" id="pj"></div>`;
+  const shareUrl=voteUrl();
+  const render=()=>{
+    const live=sess.currentTable; let body="";
+    if(sess.phase==="poll"&&sess.poll){
+      const poll=sess.poll, st=pollStats(poll,polls), best=st.slice().sort((a,b)=>b.m-a.m||b.n-a.n)[0], show=poll.revealed;
+      body=`<div class="head"><div><h1>${esc(poll.title)}</h1><p class="theme">${esc(poll.question)}</p><p class="speaker">${polls.length} réponse${polls.length>1?"s":""}${poll.open?" · sondage ouvert":show?"":" · sondage fermé"}</p></div>${poll.open?`<div id="qr"></div>`:""}</div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px">${st.map(x=>{ const win=show&&best&&best.i===x.i&&x.n>0; return `<div><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--tf);font-size:34px;font-weight:600;color:${win?"var(--orange)":"var(--white)"}">${esc(x.t)}</span><span style="font-family:var(--tf);font-size:40px;font-weight:700;color:${win?"var(--orange)":"var(--cyan)"}">${show&&x.n?f1(x.m):"?"}</span></div><div style="height:22px;border-radius:999px;background:rgba(255,255,255,.08);margin-top:10px;overflow:hidden"><div style="height:100%;width:${show?(x.m/5*100).toFixed(0):0}%;background:${win?"var(--orange)":"var(--cyan)"};transition:width .8s ease"></div></div></div>`; }).join("")}</div>`;
+    } else if(sess.phase==="results"||sess.phase==="done"||sess.phase==="favorite"){
+      const quals=qualified(sess,tables,votesBy); const favCount={}; favs.forEach(f=>favCount[f.tableId]=(favCount[f.tableId]||0)+1);
+      const favWin=sess.favRevealed?quals.map(q=>({id:q.id,n:favCount[q.id]||0})).sort((a,b)=>b.n-a.n)[0]:null;
+      body=`<div class="head"><div><h1>${sess.phase==="favorite"?"Votre coup de coeur":sess.favRevealed?"Le coup de coeur de la salle":"Les quatre irritants qualifiés"}</h1><p class="theme">${sess.phase==="favorite"?"Un seul choix, sur votre téléphone. "+favs.length+" réponse"+(favs.length>1?"s":""):"Un par thématique"}</p></div>${sess.phase==="favorite"?`<div id="qr"></div>`:""}</div>
+        <div class="reveal">${quals.map(q=>{ const shown=(sess.revealed||[]).includes(q.id)||sess.phase==="favorite"||sess.favRevealed; return `<div class="rv ${shown?"":"masked"} ${favWin&&favWin.id===q.id?"fav":""}"><div class="th">${esc(THEMES[q.theme].t)}</div><div class="ti">${esc(q.canvas.f0||"Sans titre")}</div><div class="meta">Table ${q.id}${q.speaker?" · "+esc(q.speaker):""}${sess.favRevealed&&favCount[q.id]?" · "+favCount[q.id]+" coups de coeur":""}</div><div class="sc3">${f1(q.st.s)}</div></div>`; }).join("")}</div>`;
+    } else if(sess.votingOpen&&live){
+      const t=tables[live]||emptyTable(live), s=stats(votesBy[live]||[]);
+      body=`<div class="head"><div><h1>Votez pour la table ${live}</h1><p class="theme">${esc((THEMES[t.theme]||{}).t||"")}</p><p class="speaker">${esc(t.canvas.f0||"")}</p></div><div class="chrono" id="ch">${fmt(cfg.voteSec)}</div></div>
+        <div class="votebox"><div><div class="count" id="cnt">${s.n}<small>vote${s.n>1?"s":""} reçu${s.n>1?"s":""}</small></div><p style="font-size:26px;color:var(--muted);margin-top:18px">Impact pour le patient, puis faisabilité d'ici deux ans. De 1 à 5. Pas pour sa propre table.</p></div><div id="qr"></div></div>`;
+    } else if(live){
+      const t=tables[live]||emptyTable(live), th=THEMES[t.theme]||THEMES[themeOf(live)];
+      body=`<div class="head"><div><h1>Table ${live}</h1><p class="theme">${esc(th.t)}</p><p class="speaker">${esc(t.speaker||"")}</p></div><div class="chrono" id="ch">${fmt(cfg.pitchSec)}</div></div>
+        <div class="title">${esc(t.canvas.f0||"Irritant non renseigné")}</div>
+        <div class="fields">${FIELDS.slice(1).map(f=>`<div class="field"><b>${esc(f.l)}</b><p class="${t.canvas[f.k]?"":"empty"}">${esc(t.canvas[f.k]||"Non renseigné")}</p></div>`).join("")}</div>`;
+    } else {
+      body=`<div class="head"><div><h1>Atelier d'idéation</h1><p class="theme">Hammamet, samedi 13 septembre 2026</p></div><div id="qr"></div></div><div style="flex:1;display:flex;align-items:center"><div><div class="hero-num">12 tables</div><p style="font-size:28px;color:var(--muted);margin-top:16px">Quatre thématiques, un irritant qualifié par thématique. Scannez le code pour voter.</p></div></div>`;
+    }
+    const wasChrono=$("#ch")&&$("#ch").textContent;
+    $("#pj").innerHTML=body+`<div class="controls"><button class="btn sm soft" id="chStart">Chrono (espace)</button><button class="btn sm soft" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">Plein écran</button><button class="btn sm soft" onclick="go('regie')">Régie</button></div>`;
+    const q=$("#qr"); if(q&&window.QRCode){ new QRCode(q,{text:shareUrl,width:sess.votingOpen?260:170,height:sess.votingOpen?260:170,colorDark:"#00233F",colorLight:"#ffffff"}); }
+    if(chronoT&&$("#ch")) $("#ch").textContent=fmt(left);
+    const cs=$("#chStart"); if(cs) cs.onclick=startChrono;
+  };
+  function startChrono(){ clearInterval(chronoT); left=sess.phase==="favorite"?cfg.favSec:sess.votingOpen?cfg.voteSec:cfg.pitchSec; tick(); chronoT=setInterval(tick,1000); }
+  function tick(){ const el=$("#ch"); if(!el){ clearInterval(chronoT); chronoT=null; return; } el.textContent=fmt(Math.max(left,0)); el.className="chrono"+(left<=0?" over":left<=30?" warn":""); if(left<=0){ clearInterval(chronoT); chronoT=null; return; } left--; }
+  window.onkeydown=e=>{ if(location.hash!=="#/projection") return; if(e.code==="Space"){ e.preventDefault(); startChrono(); } };
+  let lastKey="";
+  unsubs.push(store.onSession(s=>{ const key=s.phase+s.currentTable+s.votingOpen+s.favoriteOpen+(s.revealed||[]).join()+s.favRevealed; if(key!==lastKey){ clearInterval(chronoT); chronoT=null; } lastKey=key; sess=s; render(); }));
+  for(let i=1;i<=12;i++){ unsubs.push(store.onTable(i,d=>{ tables[i]=d; render(); })); unsubs.push(store.onVotes(i,v=>{ votesBy[i]=v; const c=$("#cnt"); if(c&&sess.currentTable===i&&sess.votingOpen){ c.innerHTML=v.length+`<small>vote${v.length>1?"s":""} reçu${v.length>1?"s":""}</small>`; } else render(); })); }
+  unsubs.push(store.onFavs(f=>{ favs=f; render(); }));
+  unsubs.push(store.onPolls(pv=>{ polls=pv; render(); }));
+  unsubs.push(()=>{ clearInterval(chronoT); window.onkeydown=null; });
+}
+
+/* ===================== Démarrage ===================== */
+initStore().then(loadConfig).then(route);
+</script>
+</body>
+</html>
